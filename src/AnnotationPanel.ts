@@ -16,7 +16,7 @@ export class AnnotationPanel {
         this._extensionsUri = extensionUri;
     }
 
-    
+
 
     public static createOrShow(extensionUri: vscode.Uri) {
         const column = vscode.window.activeTextEditor
@@ -45,14 +45,14 @@ export class AnnotationPanel {
 
     public static getNonce() {
         let text = '';
-	const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	for (let i = 0; i < 32; i++) {
-		text += possible.charAt(Math.floor(Math.random() * possible.length));
-	}
-	return text;
+        const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        for (let i = 0; i < 32; i++) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
     }
 
-    public static getHtml() {
+    private static getHtml() {
         const nonce = AnnotationPanel.getNonce();
         return `<!DOCTYPE html>
         <html lang="en">
