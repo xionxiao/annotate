@@ -8,13 +8,25 @@ export function activate(context: vscode.ExtensionContext) {
 
 	console.log('Congratulations, your extension "annotate" is now active!');
 
-	context.subscriptions.push(vscode.commands.registerCommand('annotate.openAnnotation', () => {
-		vscode.window.showInformationMessage('Hello World from annotate!');
-	}));
-	context.subscriptions.push(vscode.commands.registerCommand('annotate.setAnnotationDir', () => {
-		console.log("Set Annotation Directory");
-
-	}));
+	context.subscriptions.push(
+		vscode.commands.registerCommand('annotate.openAnnotation', () => {
+			const panel = vscode.window.createWebviewPanel(
+				'Annotation',
+				'Annotation Pannel',
+				vscode.ViewColumn.Two,
+				{
+					enableScripts: true,
+					localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, 'media')]
+				}
+			);
+			panel.webview.html = `<h1>Hello World</h1>`;
+		})
+	);
+	context.subscriptions.push(
+		vscode.commands.registerCommand('annotate.setAnnotationDir', () => {
+			vscode.window.showInformationMessage('Annotate directory set!');
+		})
+	);
 }
 
 // this method is called when your extension is deactivated
