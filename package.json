@@ -10,14 +10,21 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:annotate.openAnnotation"
+    "onCommand:annotate.openAnnotation",
+    "onCommand:annotate.setAnnotationDir"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "annotate.openAnnotation",
+        "category": "annotate",
         "title": "Open Annotation"
+      },
+      {
+        "command": "annotate.setAnnotationDir",
+        "category": "annotate",
+        "title": "Set Annotation Directory"
       }
     ]
   },
