@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { AnnotationPanel } from './AnnotationPanel';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -10,21 +11,14 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand('annotate.openAnnotation', () => {
-			const panel = vscode.window.createWebviewPanel(
-				'Annotation',
-				'Annotation Pannel',
-				vscode.ViewColumn.Two,
-				{
-					enableScripts: true,
-					localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, 'media')]
-				}
-			);
-			panel.webview.html = `<h1>Hello World</h1>`;
+			const panel = AnnotationPanel.createOrShow(context.extensionUri);
 		})
 	);
 	context.subscriptions.push(
 		vscode.commands.registerCommand('annotate.setAnnotationDir', () => {
-			vscode.window.showInformationMessage('Annotate directory set!');
+			console.log('Annotate directory set!');
+			let title = vscode.window.activeTextEditor?.document.fileName??"";
+			vscode.window.showInformationMessage(title);
 		})
 	);
 }
