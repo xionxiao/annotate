@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 
 
 export class AnnotationPanel {
@@ -9,17 +10,22 @@ export class AnnotationPanel {
     public static instance: AnnotationPanel | undefined;
 
     private readonly panel: vscode.WebviewPanel;
+    private readonly extensionUri: vscode.Uri; 
 
     private constructor(context:vscode.ExtensionContext) {
         let title = vscode.window.activeTextEditor?.document.fileName
             ?? "New Annotation";
+        this.extensionUri = context.extensionUri;
         this.panel = vscode.window.createWebviewPanel(
             AnnotationPanel.viewType,
             title,
             vscode.ViewColumn.Two,
             {
                 enableScripts: true,
-                localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, "media")]
+                localResourceRoots: [
+                    vscode.Uri.joinPath(context.extensionUri, "media"),
+                    vscode.Uri.joinPath(context.extensionUri, "css"),
+                ]
             }
         );
     }
@@ -32,9 +38,15 @@ export class AnnotationPanel {
         }
     }
 
+    private loadResource(folder:string, filename:string) {
+        const onDiskUri = vscode.Uri.joinPath(this.extensionUri, folder, filename);
+        console.log(onDiskUri);
+        return this.panel.webview.asWebviewUri(onDiskUri);
+    }
+
     public update() {
         if (this.panel) {
-            this.panel.webview.html = AnnotationPanel.getHtml();
+            this.panel.webview.html = this.getHtml();
         }
     }
 
@@ -57,8 +69,9 @@ export class AnnotationPanel {
         return text;
     }
 
-    private static getHtml() {
+    private getHtml() {
         const nonce = AnnotationPanel.getNonce();
+        const css = this.loadResource("css", "style.css");
         return `<!DOCTYPE html>
         <html lang="en">
         <head>
@@ -72,7 +85,7 @@ export class AnnotationPanel {
 
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-            <link href="" rel="stylesheet">
+            <link href="${css}" rel="stylesheet">
 
             <title>New Annotation</title>
         </head>
