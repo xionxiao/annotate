@@ -32,9 +32,15 @@ export function activate(context: vscode.ExtensionContext) {
 	 */
 	createCommand(context, 'annotate.addAnnotation', () => {
 		console.log('Add annotation');
-		let selection = vscode.window.activeTextEditor?.selection;
-		let text = vscode.window.activeTextEditor?.document.getText(selection);
-		vscode.window.showInformationMessage(text ?? "");
+		let editor = vscode.window.activeTextEditor;
+		let selection = editor?.selection;
+		let text = editor?.document.getText(selection);
+		vscode.window.showInformationMessage(
+			`${selection?.start.line} : 
+			${selection?.start.character} : 
+			${selection?.end.line} : 
+			${selection?.end.character} => 
+			${text}`);
 	});
 }
 
