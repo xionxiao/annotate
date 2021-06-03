@@ -72,6 +72,7 @@ export class AnnotationPanel {
     private getHtml() {
         const nonce = AnnotationPanel.getNonce();
         const css = this.loadResource("css", "style.css");
+        const webview = this.panel.webview;
         return `<!DOCTYPE html>
         <html lang="en">
         <head>
@@ -81,7 +82,8 @@ export class AnnotationPanel {
                 Use a content security policy to only allow loading images from https or from our extension directory,
                 and only allow scripts that have a specific nonce.
             -->
-            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${nonce}';">
+
+            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
 
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
