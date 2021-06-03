@@ -23,8 +23,7 @@ export class AnnotationPanel {
             {
                 enableScripts: true,
                 localResourceRoots: [
-                    vscode.Uri.joinPath(context.extensionUri, "media"),
-                    vscode.Uri.joinPath(context.extensionUri, "css"),
+                    vscode.Uri.joinPath(context.extensionUri, "resource/css"),
                 ]
             }
         );
@@ -71,7 +70,7 @@ export class AnnotationPanel {
 
     private getHtml() {
         const nonce = AnnotationPanel.getNonce();
-        const css = this.loadResource("css", "style.css");
+        const css = this.loadResource("resource/css", "style.css");
         const webview = this.panel.webview;
         return `<!DOCTYPE html>
         <html lang="en">
