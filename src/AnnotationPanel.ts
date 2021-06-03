@@ -6,41 +6,46 @@ export class AnnotationPanel {
      * 
      */
     public static readonly viewType = "AnnotationPanel";
-    public static currentPanel: AnnotationPanel | undefined;
+    public static instance: AnnotationPanel | undefined;
 
-    private readonly _panel: vscode.WebviewPanel;
-    private readonly _extensionsUri: vscode.Uri;
+    private readonly panel: vscode.WebviewPanel;
 
-    public constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-        this._panel = panel;
-        this._extensionsUri = extensionUri;
-    }
-
-
-
-    public static createOrShow(extensionUri: vscode.Uri) {
-        const column = vscode.window.activeTextEditor
-            ? vscode.window.activeTextEditor.viewColumn
-            : undefined;
-
-        if (AnnotationPanel.currentPanel) {
-            AnnotationPanel.currentPanel._panel.reveal(column);
-            return;
-        }
-
+    private constructor(context:vscode.ExtensionContext) {
         let title = vscode.window.activeTextEditor?.document.fileName
             ?? "New Annotation";
-        const panel = vscode.window.createWebviewPanel(
+        this.panel = vscode.window.createWebviewPanel(
             AnnotationPanel.viewType,
             title,
             vscode.ViewColumn.Two,
             {
                 enableScripts: true,
-                localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'media')]
+                localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, "media")]
             }
         );
-        panel.webview.html = AnnotationPanel.getHtml();
-        return panel;
+    }
+
+    public static getInstance(context:vscode.ExtensionContext) {
+        if (AnnotationPanel.instance) {
+            return AnnotationPanel.instance;
+        } else {
+            return new AnnotationPanel(context);
+        }
+    }
+
+    public update() {
+        if (this.panel) {
+            this.panel.webview.html = AnnotationPanel.getHtml();
+        }
+    }
+
+    public show() {
+        const column = vscode.window.activeTextEditor
+            ? vscode.window.activeTextEditor.viewColumn
+            : undefined;
+        if (this.panel) {
+            this.update();
+            this.panel.reveal(column);
+        }
     }
 
     public static getNonce() {
