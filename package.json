@@ -10,6 +10,7 @@
     "Other"
   ],
   "activationEvents": [
+    "onCommand:annotate.addAnnotation",
     "onCommand:annotate.openAnnotation",
     "onCommand:annotate.setAnnotationDir"
   ],
@@ -17,16 +18,29 @@
   "contributes": {
     "commands": [
       {
+        "command": "annotate.setAnnotationDir",
+        "category": "annotate",
+        "title": "Set Annotation Directory"
+      },
+      {
         "command": "annotate.openAnnotation",
         "category": "annotate",
         "title": "Open Annotation"
       },
       {
-        "command": "annotate.setAnnotationDir",
+        "command": "annotate.addAnnotation",
         "category": "annotate",
-        "title": "Set Annotation Directory"
+        "title": "Add Annotation"
       }
-    ]
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "annotate.addAnnotation",
+          "when": "editorHasSelection"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -54,5 +68,8 @@
     "vscode-test": "^1.5.0",
     "webpack": "^5.19.0",
     "webpack-cli": "^4.4.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
   }
 }
