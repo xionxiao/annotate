@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <!--
+        Use a content security policy to only allow loading images from https or from our extension directory,
+        and only allow scripts that have a specific nonce.
+    -->
+
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; style-src <%= webview.cspSource %>; img-src <%= webview.cspSource %> https:; script-src 'nonce-<%= nonce %>';">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="<%= cssUri %>" rel="stylesheet">
+
+    <title>New Annotation</title>
+</head>
+
+<body>
+    <h1>new annotation</h1>
+    <textarea class="text-area"></textarea>
+
+    <script nonce="<%= nonce %>" src="<%= scriptUri %>"></script>
+</body>
+
+</html>

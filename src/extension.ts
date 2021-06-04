@@ -3,6 +3,7 @@
 import * as vscode from 'vscode';
 import { AnnotationPanel } from './AnnotationPanel';
 import * as _ from 'lodash';
+import * as fs from 'fs';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -24,7 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
 	createCommand(context, 'annotate.setAnnotationDir', () => {
 		console.log('Annotate directory set!');
 		let title = vscode.window.activeTextEditor?.document.fileName ?? "";
-		vscode.window.showInformationMessage(title);
+		messageBox(title);
 	});
 
 	/**
@@ -46,6 +47,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 function createCommand(context: vscode.ExtensionContext, cmd: string, fn: (...args: any[]) => any, thisArg?: any) {
 	context.subscriptions.push(vscode.commands.registerCommand(cmd, fn));
+}
+
+function messageBox(content:string) {
+	vscode.window.showInformationMessage(content);
 }
 
 // this method is called when your extension is deactivated
