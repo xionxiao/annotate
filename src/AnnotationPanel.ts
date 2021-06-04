@@ -67,9 +67,9 @@ export class AnnotationPanel {
         return text;
     }
 
-    private async readFile(path: string) : Promise<string> {
-        return new Promise ((resolve, reject) => {
-            fs.readFile(path, {encoding: 'utf-8' }, (error, data) => {
+    private async readFile(path: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            fs.readFile(path, { encoding: 'utf-8' }, (error, data) => {
                 if (error) {
                     reject(error);
                 }
@@ -81,17 +81,23 @@ export class AnnotationPanel {
 
     private async getHtml() {
         let uri = vscode.Uri.joinPath(this.extensionUri, 'resource/html', 'index.html');
-        let data = await this.readFile(uri.path);
-        const nonce = AnnotationPanel.getNonce();
-        const cssUri = this.loadResource("resource/css", "style.css");
-        const scriptUri = this.loadResource("resource/js", "main.js");
-        const webview = this.panel.webview;
-        let template = _.template(data);
-        return template({
-            'nonce': nonce,
-            'cssUri': cssUri,
-            'webview': webview,
-            'scriptUri': scriptUri
-        });
+        try {
+            let data = await this.readFile(uri.path);
+            const nonce = AnnotationPanel.getNonce();
+            const cssUri = this.loadResource("resource/css", "style.css");
+            const scriptUri = this.loadResource("resource/js", "main.js");
+            const webview = this.panel.webview;
+            let template = _.template(data);
+            return template({
+                'nonce': nonce,
+                'cssUri': cssUri,
+                'webview': webview,
+                'scriptUri': scriptUri
+            });
+        } catch (error) {
+            console.log(error);
+            return JSON.stringify(error);
+        }
+
     }
 }
