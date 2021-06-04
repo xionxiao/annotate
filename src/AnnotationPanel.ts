@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import _ = require('lodash');
 
-
 export class AnnotationPanel {
     /**
      * 
@@ -46,9 +45,9 @@ export class AnnotationPanel {
         return this.panel.webview.asWebviewUri(onDiskUri);
     }
 
-    public update() {
+    public async update() {
         if (this.panel) {
-            this.panel.webview.html = this.getHtml();
+            this.panel.webview.html = await this.getHtml();
         }
     }
 
@@ -68,49 +67,31 @@ export class AnnotationPanel {
         return text;
     }
 
-    private getHtml() {
+    private async readFile(path: string) : Promise<string> {
+        return new Promise ((resolve, reject) => {
+            fs.readFile(path, {encoding: 'utf-8' }, (error, data) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(data);
+            });
+        });
+    }
+
+
+    private async getHtml() {
         let uri = vscode.Uri.joinPath(this.extensionUri, 'resource/html', 'index.html');
-        let data = fs.readFileSync(uri.path, {encoding:'utf-8'});
-        console.log(data.toString());
+        let data = await this.readFile(uri.path);
         const nonce = AnnotationPanel.getNonce();
         const cssUri = this.loadResource("resource/css", "style.css");
         const scriptUri = this.loadResource("resource/js", "main.js");
         const webview = this.panel.webview;
-        let template = _.template(data.toString());
-        let html = template({
+        let template = _.template(data);
+        return template({
             'nonce': nonce,
             'cssUri': cssUri,
             'webview': webview,
             'scriptUri': scriptUri
         });
-        console.log(html);
-        return html;
-        /*
-        return `<!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-
-            <!--
-                Use a content security policy to only allow loading images from https or from our extension directory,
-                and only allow scripts that have a specific nonce.
-            -->
-
-            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
-
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-            <link href="${cssUri}" rel="stylesheet">
-            
-            <title>New Annotation</title>
-        </head>
-        <body>
-            <h1>New Annotation</h1>
-            <textarea></textarea>
-
-            <script nonce="${nonce}" src="${scriptUri}"></script>
-        </body>
-        </html>`;
-        */
     }
 }
