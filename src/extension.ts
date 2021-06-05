@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { AnnotationPanel } from './AnnotationPanel';
+import { getDefinitions } from './utils';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -9,13 +10,28 @@ export function activate(context: vscode.ExtensionContext) {
 
 	console.log('Congratulations, your extension "annotate" is now active!');
 	const config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration();
+	console.log(`rootDir: , ${config.get("annotate.rootDir")}`);
+	console.log(`extensionPath: ${context.extensionPath}`);
 
 	/**
 	 * open annotation panel
 	 */
 	createCommand(context, 'annotate.openAnnotation', () => {
+		/*
 		let panel = AnnotationPanel.getInstance(context);
 		panel.show();
+		*/
+		let editor = vscode.window.activeTextEditor;
+		let currentFile = editor?.document.fileName;
+		if (vscode.workspace.workspaceFolders) {
+			let path = vscode.workspace.workspaceFile;
+			console.log(`workspaceFile: ${path}`);
+			for (let i in vscode.workspace.workspaceFolders) {
+				console.log(`${i} - ${vscode.workspace.workspaceFolders[i].uri.fsPath}`);
+			}
+		}
+		console.log(`currentFile: ${currentFile}`);
+		getDefinitions();
 	});
 
 	/**
@@ -35,6 +51,9 @@ export function activate(context: vscode.ExtensionContext) {
 		let editor = vscode.window.activeTextEditor;
 		let selection = editor?.selection;
 		let text = editor?.document.getText(selection);
+		let fsPath = editor?.document.uri.fsPath ?? "";
+		let root = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(fsPath));
+		console.log('root', root?.uri);
 		vscode.window.showInformationMessage(
 			`${selection?.start.line} : 
 			${selection?.start.character} : 

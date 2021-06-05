@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
+import { readFileAsync } from './utils';
 import _ = require('lodash');
 
 export class AnnotationPanel {
@@ -67,22 +67,10 @@ export class AnnotationPanel {
         return text;
     }
 
-    private async readFile(path: string): Promise<string> {
-        return new Promise((resolve, reject) => {
-            fs.readFile(path, { encoding: 'utf-8' }, (error, data) => {
-                if (error) {
-                    reject(error);
-                }
-                resolve(data);
-            });
-        });
-    }
-
-
     private async getHtml() {
         let uri = vscode.Uri.joinPath(this.extensionUri, 'resource/html', 'index.html');
         try {
-            let data = await this.readFile(uri.path);
+            let data = await readFileAsync(uri.path);
             const nonce = AnnotationPanel.getNonce();
             const cssUri = this.loadResource("resource/css", "style.css");
             const scriptUri = this.loadResource("resource/js", "main.js");
@@ -98,6 +86,5 @@ export class AnnotationPanel {
             console.log(error);
             return JSON.stringify(error);
         }
-
     }
 }
