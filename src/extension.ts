@@ -50,12 +50,14 @@ export function activate(context: vscode.ExtensionContext) {
 		console.log('Add annotation', args, thisArg);
 		let editor = vscode.window.activeTextEditor;
 		let selection = editor?.selection;
+		let active = editor?.selection.active;
 		let text = editor?.document.getText(selection);
 		let fsPath = editor?.document.uri.fsPath ?? "";
 		let root = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(fsPath));
 		console.log('root', root?.uri);
-		vscode.window.showInformationMessage(
-			`${selection?.start.line} : 
+		messageBox(
+			`${active} :
+			${selection?.start.line} : 
 			${selection?.start.character} : 
 			${selection?.end.line} : 
 			${selection?.end.character} => 
