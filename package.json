@@ -35,6 +35,12 @@
       }
     ],
     "menus": {
+      "commandPalette": [
+        {
+          "command": "annotate.addAnnotation",
+          "when": "editorHasSelection"
+        }
+      ],
       "editor/context": [
         {
           "command": "annotate.addAnnotation",
