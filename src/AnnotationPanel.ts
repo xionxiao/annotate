@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { readFileAsync } from './utils';
+import { readFile } from './utils';
 import _ = require('lodash');
 
 export class AnnotationPanel {
@@ -70,7 +70,7 @@ export class AnnotationPanel {
     private async getHtml() {
         let uri = vscode.Uri.joinPath(this.extensionUri, 'resource/html', 'index.html');
         try {
-            let data = await readFileAsync(uri.path);
+            let data = await readFile(uri.path);
             const nonce = AnnotationPanel.getNonce();
             const cssUri = this.loadResource("resource/css", "style.css");
             const scriptUri = this.loadResource("resource/js", "main.js");

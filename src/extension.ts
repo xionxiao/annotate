@@ -2,7 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { AnnotationPanel } from './AnnotationPanel';
-import { getDefinitions } from './utils';
+import * as utils from './utils';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -12,15 +12,13 @@ export function activate(context: vscode.ExtensionContext) {
     const config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration();
     console.log(`rootDir: , ${config.get("annotate.rootDir")}`);
     console.log(`extensionPath: ${context.extensionPath}`);
+    console.log(`extensionStoragePath: ${context.storageUri}`);
 
     /**
      * open annotation panel
+     * show annotations of current file
      */
     createCommand(context, 'annotate.openAnnotation', () => {
-        /*
-        let panel = AnnotationPanel.getInstance(context);
-        panel.show();
-        */
         let editor = vscode.window.activeTextEditor;
         let currentFile = editor?.document.fileName;
         if (vscode.workspace.workspaceFolders) {
@@ -31,7 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
             }
         }
         console.log(`currentFile: ${currentFile}`);
-        getDefinitions();
+        utils.getDefinitions();
     });
 
     /**
@@ -41,6 +39,13 @@ export function activate(context: vscode.ExtensionContext) {
         console.log('Annotate directory set!');
         let title = vscode.window.activeTextEditor?.document.fileName ?? "";
         messageBox(title);
+        /*
+        const gitSCM = vscode.scm.createSourceControl('git', 'Git');
+        console.log(gitSCM);
+        vscode.commands.executeCommand('vscode.workspace.git.timeline.copyCommitId').then(res => {
+            console.log(`git status ${res}`);
+        });
+        */
         vscode.languages.registerHoverProvider(
             '*',
             new (class implements vscode.HoverProvider {
@@ -49,9 +54,17 @@ export function activate(context: vscode.ExtensionContext) {
                     _position: vscode.Position,
                     _token: vscode.CancellationToken
                 ): vscode.ProviderResult<vscode.Hover> {
+                    /*
                     const commentCommandUri = vscode.Uri.parse("command:editor.action.addCommentLine");
                     console.log(commentCommandUri);
                     const content = new vscode.MarkdownString(`[Comment Line](${commentCommandUri})`);
+                    */
+                    const args = [{ resourceUri: _document.uri }];
+                    const stageCommandUri = vscode.Uri.parse(
+                        `command:git.log?${encodeURIComponent(JSON.stringify(args))}`
+                    );
+                    const content = new vscode.MarkdownString(`[Stage file](${stageCommandUri})`);
+                    console.log(`content: ${JSON.stringify(content)} || ${stageCommandUri}`);
                     content.isTrusted = true;
                     return new vscode.Hover(content);
                 }
@@ -62,22 +75,49 @@ export function activate(context: vscode.ExtensionContext) {
     /**
      * add annotation to selections
      */
-    createCommand(context, 'annotate.addAnnotation', (args, thisArg) => {
+    createCommand(context, 'annotate.addAnnotation', async (args, thisArg) => {
         console.log('Add annotation', args, thisArg);
         let editor = vscode.window.activeTextEditor;
+        // get selections, if not get current line
         let selection = editor?.selection;
+        console.log(`selection: ${JSON.stringify(selection)}`);
+        // get activate
         let active = editor?.selection.active;
+        console.log(`active: ${JSON.stringify(active)}`);
+        // get select text
         let text = editor?.document.getText(selection);
+        console.log(`select text: ${text}`);
+        // current file path
         let fsPath = editor?.document.uri.fsPath ?? "";
-        let root = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(fsPath));
-        console.log('root', root?.uri);
-        messageBox(
-            `${active} :
-			${selection?.start.line} : 
-			${selection?.start.character} : 
-			${selection?.end.line} : 
-			${selection?.end.character} => 
-			${text}`);
+        console.log(`file path: ${fsPath}`);
+        let root = utils.getCurrentWorkspaceFolder();
+        console.log('workspace folder', root?.fsPath);
+        let path = getNotePath();
+        console.log(`path: ${path}`);
+        if (path) {
+            //await utils.openFile(path);
+            let exist = await utils.fileExist(path);
+            if (exist) {
+                console.log("file exist");
+                vscode.window.showTextDocument(vscode.Uri.file(path), {
+                    viewColumn: vscode.ViewColumn.Beside,
+                    preview: false
+                }).then(editor => {
+                    console.log(`editor: ${JSON.stringify(editor)}`);
+                    editor.edit((editBuilder) => {
+                        editBuilder.insert(new vscode.Position(0, 0), `## ${JSON.stringify(selection)}`);
+                      });
+                });
+            } else {
+                console.log("file not exist");
+                vscode.window.showTextDocument(vscode.Uri.file(path), {
+                    viewColumn: vscode.ViewColumn.Beside,
+                    preview: false
+                }).then(value => {
+                    console.log(`value: ${JSON.stringify(value)}`);
+                });
+            }
+        }
     });
 
     if (vscode.window.registerWebviewPanelSerializer) {
@@ -89,6 +129,14 @@ export function activate(context: vscode.ExtensionContext) {
             }
         });
     }
+}
+
+function getNotePath() {
+    let fsPath = vscode.window.activeTextEditor?.document.uri.fsPath;
+    let rootPath = utils.getCurrentWorkspaceFolder()?.fsPath ?? '';
+    let notePath = rootPath + '/.vscode/.annotation';
+    let path = fsPath?.replace(rootPath, notePath) + '.md';
+    return path;
 }
 
 function createCommand(context: vscode.ExtensionContext, cmd: string, fn: (...args: any[]) => any, thisArg?: any) {
