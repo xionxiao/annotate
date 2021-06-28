@@ -14,6 +14,9 @@ export function activate(context: vscode.ExtensionContext) {
     console.log(`extensionPath: ${context.extensionPath}`);
     console.log(`extensionStoragePath: ${context.storageUri}`);
 
+    console.log("onDidCloseTextDocument");
+    context.subscriptions.push(vscode.workspace.onDidCloseTextDocument(e => console.log('onColse', e)));
+
     /**
      * open annotation panel
      * show annotations of current file

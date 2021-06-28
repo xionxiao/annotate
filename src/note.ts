@@ -1,16 +1,20 @@
 import * as vscode from 'vscode';
 
-class Note {
+
+export class AnnotateConfig {
     // root Uri of all note
-    static noteRootUri: vscode.Uri;
+    static rootUri: vscode.Uri;
+}
+
+export class Note {
+    // source file annotate to
+    readonly sourceFile: vscode.Uri;
     // selection from
     readonly from: vscode.Position;
     // selection to
     readonly to: vscode.Position;
-    // source file annotate to
-    readonly sourceFile: vscode.Uri;
     // markdown note content
-    note: vscode.MarkdownString | undefined;
+    note: vscode.MarkdownString | string | undefined;
 
     constructor(sourceFile: vscode.Uri, from: vscode.Position, to: vscode.Position) {
         this.sourceFile = sourceFile;
