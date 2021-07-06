@@ -14,11 +14,10 @@ export async function readFile(path: string): Promise<string> {
     });
 }
 
-export async function fileExist(fsPath: string): Promise<boolean> {
+export async function existFile(fsPath: string): Promise<boolean> {
     return new Promise(resolve => {
         fs.stat(fsPath, err => {
             if (err) {
-                console.log(`error: ${err}`);
                 resolve(false);
             } else {
                 resolve(true);
