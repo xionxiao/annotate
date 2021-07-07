@@ -23,8 +23,15 @@ export class Note {
         this.to = to;
     }
 
+    // Return postion from-to, 
+    // e.g. L30:1-32:15, L30-32, L30
     toString() {
-        return `L${this.from.line}${this.from ? ':' + this.from.character : ''}-${this.to.line}:${this.to ? ':' + this.to.character : ''}`;
+        let from = `L${this.from.line}${this.from ? ':' + this.from.character : ''}`;
+        if (this.to) {
+            return `${from}-${this.to.line}${this.to ? ':' + this.to.character : ''}`;
+        } else {
+            return from;
+        }
     }
 
     toMarkdown() {
