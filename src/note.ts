@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as utils from './utils';
 
 
 export class AnnotateConfig {
@@ -20,5 +21,21 @@ export class Note {
         this.sourceFile = sourceFile;
         this.from = from;
         this.to = to;
+    }
+
+    toString() {
+        return `L${this.from.line}${this.from ? ':' + this.from.character : ''}-${this.to.line}:${this.to ? ':' + this.to.character : ''}`;
+    }
+
+    toMarkdown() {
+        let md = new vscode.MarkdownString(`##${this.toString()}\n`);
+        if (this.note) {
+            if (typeof this.note === 'string') {
+                md.appendText(this.note);
+            } else {
+                md.appendMarkdown(this.note.value);
+            }
+        }
+        return md;
     }
 }
