@@ -47,7 +47,19 @@
           "when": "editorHasSelection"
         }
       ]
-    }
+    },
+    "configuration":[
+      {
+        "title": "Annotate",
+        "properties": {
+          "annotate.path": {
+            "type": "string",
+            "default": ".vscode/annotate/",
+            "description": "Specifies the folder path to store annotations"
+          }
+        }
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
