@@ -1,10 +1,15 @@
 import * as vscode from 'vscode';
-import * as utils from './utils';
-
 
 export class AnnotateConfig {
-    // root Uri of all note
-    static rootUri: vscode.Uri;
+    // root path of note
+    path!: string;
+
+    // get configures from settings.json
+    getConfigs() {
+        const config = vscode.workspace.getConfiguration();
+        this.path = config.get("annotate.path", "");
+        console.log('annotate.path: ', this.path);
+    }
 }
 
 export class Note {
@@ -23,8 +28,10 @@ export class Note {
         this.to = to;
     }
 
-    // Return postion from-to, 
-    // e.g. L30:1-32:15, L30-32, L30
+    /**
+     * Display position from-to
+     * @returns string e.g. L30:1-32:15, L30-32, L30 
+     */
     toString() {
         let from = `L${this.from.line}${this.from ? ':' + this.from.character : ''}`;
         if (this.to) {
@@ -34,7 +41,11 @@ export class Note {
         }
     }
 
-    toMarkdown() {
+    /**
+     * Convert to MarkdownString
+     * @returns {@link vscode.MarkdownString}
+     */
+    toMarkdown():vscode.MarkdownString {
         let md = new vscode.MarkdownString(`##${this.toString()}\n`);
         if (this.note) {
             if (typeof this.note === 'string') {
