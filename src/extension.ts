@@ -1,28 +1,26 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { AnnotationPanel } from './AnnotationPanel';
 import * as utils from './utils';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-
-    console.log('Congratulations, your extension "annotate" is now active!');
-    const config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration();
-    console.log(`rootDir: , ${config.get("annotate.rootDir")}`);
-    console.log(`extensionPath: ${context.extensionPath}`);
-    console.log(`extensionStoragePath: ${context.storageUri}`);
-
-    console.log("onDidCloseTextDocument");
-    context.subscriptions.push(vscode.workspace.onDidCloseTextDocument(e => console.log('onColse', e)));
+    console.log('extension "annotate" is now active!');
 
     /**
      * open annotation panel
      * show annotations of current file
      */
-    createCommand(context, 'annotate.openAnnotation', () => {
+    createCommand(context, 'annotate.openAnnotation', async () => {
         let editor = vscode.window.activeTextEditor;
+        // current file path
+        let fsPath = editor?.document.uri.fsPath ?? "";
+        console.log(`file path: ${fsPath}`);
+        let root = utils.getCurrentWorkspaceFolder();
+        console.log('workspace folder', root?.fsPath);
+        let path = getNotePath();
+        console.log(`path: ${path}`);
+        if (path) {
+
+        }
+
         let currentFile = editor?.document.fileName;
         if (vscode.workspace.workspaceFolders) {
             let path = vscode.workspace.workspaceFile;
@@ -32,47 +30,6 @@ export function activate(context: vscode.ExtensionContext) {
             }
         }
         console.log(`currentFile: ${currentFile}`);
-        utils.getDefinitions();
-    });
-
-    /**
-     * set annotation base directory
-     */
-    createCommand(context, 'annotate.setAnnotationDir', () => {
-        console.log('Annotate directory set!');
-        let title = vscode.window.activeTextEditor?.document.fileName ?? "";
-        messageBox(title);
-        /*
-        const gitSCM = vscode.scm.createSourceControl('git', 'Git');
-        console.log(gitSCM);
-        vscode.commands.executeCommand('vscode.workspace.git.timeline.copyCommitId').then(res => {
-            console.log(`git status ${res}`);
-        });
-        */
-        vscode.languages.registerHoverProvider(
-            '*',
-            new (class implements vscode.HoverProvider {
-                provideHover(
-                    _document: vscode.TextDocument,
-                    _position: vscode.Position,
-                    _token: vscode.CancellationToken
-                ): vscode.ProviderResult<vscode.Hover> {
-                    /*
-                    const commentCommandUri = vscode.Uri.parse("command:editor.action.addCommentLine");
-                    console.log(commentCommandUri);
-                    const content = new vscode.MarkdownString(`[Comment Line](${commentCommandUri})`);
-                    */
-                    const args = [{ resourceUri: _document.uri }];
-                    const stageCommandUri = vscode.Uri.parse(
-                        `command:git.log?${encodeURIComponent(JSON.stringify(args))}`
-                    );
-                    const content = new vscode.MarkdownString(`[Stage file](${stageCommandUri})`);
-                    console.log(`content: ${JSON.stringify(content)} || ${stageCommandUri}`);
-                    content.isTrusted = true;
-                    return new vscode.Hover(content);
-                }
-            })()
-        );
     });
 
     /**
@@ -99,7 +56,7 @@ export function activate(context: vscode.ExtensionContext) {
         console.log(`path: ${path}`);
         if (path) {
             //await utils.openFile(path);
-            let exist = await utils.fileExist(path);
+            let exist = await utils.existFile(path);
             if (exist) {
                 console.log("file exist");
                 vscode.window.showTextDocument(vscode.Uri.file(path), {
@@ -109,7 +66,7 @@ export function activate(context: vscode.ExtensionContext) {
                     console.log(`editor: ${JSON.stringify(editor)}`);
                     editor.edit((editBuilder) => {
                         editBuilder.insert(new vscode.Position(0, 0), `## ${JSON.stringify(selection)}`);
-                      });
+                    });
                 });
             } else {
                 console.log("file not exist");
@@ -122,31 +79,24 @@ export function activate(context: vscode.ExtensionContext) {
             }
         }
     });
-
-    if (vscode.window.registerWebviewPanelSerializer) {
-        vscode.window.registerWebviewPanelSerializer(AnnotationPanel.viewType, {
-            async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
-                console.log(`Got state: ${state}`, webviewPanel);
-                let panel = AnnotationPanel.getInstance(context);
-                panel.show();
-            }
-        });
-    }
 }
 
-function getNotePath() {
-    let fsPath = vscode.window.activeTextEditor?.document.uri.fsPath;
-    let rootPath = utils.getCurrentWorkspaceFolder()?.fsPath ?? '';
-    let notePath = rootPath + '/.vscode/.annotation';
-    let path = fsPath?.replace(rootPath, notePath) + '.md';
-    return path;
-}
-
+/**
+ * shortcut of rigister a command
+ * @param context : vscode context
+ * @param cmd : command presentation
+ * @param fn : command body: (args, thisArg) => { return vscode.Disposable }
+ * @param thisArg : command context
+ */
 function createCommand(context: vscode.ExtensionContext, cmd: string, fn: (...args: any[]) => any, thisArg?: any) {
     context.subscriptions.push(vscode.commands.registerCommand(cmd, fn));
 }
 
-function messageBox(content: string) {
+/**
+ * Show toast in vscode right corner
+ * @param content : content of toast
+ */
+function toast(content: string) {
     vscode.window.showInformationMessage(content);
 }
 
