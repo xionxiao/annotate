@@ -1,8 +1,13 @@
 import * as vscode from 'vscode';
+import * as utils from './utils';
 
 export class AnnotateConfig {
     // root path of note
     path!: string;
+
+    constructor() {
+        this.getConfigs();
+    }
 
     // get configures from settings.json
     getConfigs() {
@@ -45,7 +50,7 @@ export class Note {
      * Convert to MarkdownString
      * @returns {@link vscode.MarkdownString}
      */
-    toMarkdown():vscode.MarkdownString {
+    toMarkdown(): vscode.MarkdownString {
         let md = new vscode.MarkdownString(`##${this.toString()}\n`);
         if (this.note) {
             if (typeof this.note === 'string') {

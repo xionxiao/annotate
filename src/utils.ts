@@ -42,6 +42,10 @@ export function writeFile(uri: vscode.Uri, content: string) {
     vscode.workspace.fs.writeFile(uri, enc.encode(content));
 }
 
+/**
+ * Find definitions of current selection
+ * @returns list of definitions
+ */
 export async function getDefinitions() {
     const activeEditor = vscode.window.activeTextEditor;
     if (!activeEditor) {
@@ -60,6 +64,10 @@ export async function getDefinitions() {
     return definitions;
 }
 
+/**
+ * Get current workspace folder
+ * @returns current workspace folder
+ */
 export function getCurrentWorkspaceFolder(): vscode.Uri | undefined {
     let editor = vscode.window.activeTextEditor;
     let uri = editor?.document.uri;
