@@ -1,0 +1,61 @@
+let title = vscode.window.activeTextEditor?.document.fileName ?? "";
+messageBox(title);
+/*
+const gitSCM = vscode.scm.createSourceControl('git', 'Git');
+console.log(gitSCM);
+vscode.commands.executeCommand('vscode.workspace.git.timeline.copyCommitId').then(res => {
+    console.log(`git status ${res}`);
+});
+*/
+
+//
+vscode.languages.registerHoverProvider(
+    '*',
+    new (class implements vscode.HoverProvider {
+        provideHover(
+            _document: vscode.TextDocument,
+            _position: vscode.Position,
+            _token: vscode.CancellationToken
+        ): vscode.ProviderResult<vscode.Hover> {
+            /*
+            const commentCommandUri = vscode.Uri.parse("command:editor.action.addCommentLine");
+            console.log(commentCommandUri);
+            const content = new vscode.MarkdownString(`[Comment Line](${commentCommandUri})`);
+            */
+            const args = [{ resourceUri: _document.uri }];
+            const stageCommandUri = vscode.Uri.parse(
+                `command:git.log?${encodeURIComponent(JSON.stringify(args))}`
+            );
+            const content = new vscode.MarkdownString(`[Stage file](${stageCommandUri})`);
+            console.log(`content: ${JSON.stringify(content)} || ${stageCommandUri}`);
+            content.isTrusted = true;
+            return new vscode.Hover(content);
+        }
+    })()
+);
+
+
+// 显示WebView 
+if (vscode.window.registerWebviewPanelSerializer) {
+    vscode.window.registerWebviewPanelSerializer(AnnotationPanel.viewType, {
+        async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
+            console.log(`Got state: ${state}`, webviewPanel);
+            let panel = AnnotationPanel.getInstance(context);
+            panel.show();
+        }
+    });
+}
+
+
+// 注册关闭文件回调
+console.log("onDidCloseTextDocument");
+context.subscriptions.push(vscode.workspace.onDidCloseTextDocument(e => console.log('onColse', e)));
+
+// 获取Note路径
+function getNotePath() {
+    let fsPath = vscode.window.activeTextEditor?.document.uri.fsPath;
+    let rootPath = utils.getCurrentWorkspaceFolder()?.fsPath ?? '';
+    let notePath = rootPath + '/.vscode/.annotation';
+    let path = fsPath?.replace(rootPath, notePath) + '.md';
+    return path;
+}
