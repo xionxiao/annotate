@@ -1,19 +1,41 @@
+import { fstat } from 'fs';
 import * as vscode from 'vscode';
 import * as utils from './utils';
+const path = require('path');
+const fs = require('fs');
+const DEFUALT_PATH = '.vscode/.annotate';
 
 export class AnnotateConfig {
     // root path of note
-    path!: string;
-
-    constructor() {
-        this.getConfigs();
-    }
+    path: string | undefined;
 
     // get configures from settings.json
-    getConfigs() {
+    async loadConfigs() {
         const config = vscode.workspace.getConfiguration();
-        this.path = config.get("annotate.path", "");
-        console.log('annotate.path: ', this.path);
+        this.path = config.get('annotate.path', "");
+        if (!this.path) {
+            this.path = DEFUALT_PATH;
+        }
+        console.log('get annotate.path: ', this.path);
+        // path is not abstract path
+        if (!path.isAbsolute(this.path)) {
+            const folder = utils.getCurrentWorkspaceFolder();
+            if (folder && folder.path) {
+                this.path = path.join(folder.path, this.path);
+            }
+        }
+        console.log('Config path: ', this.path);
+        // if path not exist, create path
+        if (!await utils.existFile(this.path!)) {
+            console.log('create path');
+            // vscode.workspace.createDirectory(path).then();
+            fs.mkdir(this.path, { recursive: true }, (err: Error) => {
+                if (err) {
+                    console.log(`mkdir error: ${err}`);
+                    this.path = undefined;
+                }
+            });
+        }
     }
 }
 

@@ -1,25 +1,25 @@
 import * as vscode from 'vscode';
+import { AnnotateConfig } from './note';
 import * as utils from './utils';
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('extension "annotate" is now active!');
+    let config = new AnnotateConfig();
+    config.loadConfigs();
 
     /**
      * open annotation panel
      * show annotations of current file
      */
     createCommand(context, 'annotate.openAnnotation', async () => {
+        console.log("execute annotate.openAnnotation");
+        /*
         let editor = vscode.window.activeTextEditor;
         // current file path
         let fsPath = editor?.document.uri.fsPath ?? "";
         console.log(`file path: ${fsPath}`);
         let root = utils.getCurrentWorkspaceFolder();
         console.log('workspace folder', root?.fsPath);
-        let path = getNotePath();
-        console.log(`path: ${path}`);
-        if (path) {
-
-        }
 
         let currentFile = editor?.document.fileName;
         if (vscode.workspace.workspaceFolders) {
@@ -30,13 +30,14 @@ export function activate(context: vscode.ExtensionContext) {
             }
         }
         console.log(`currentFile: ${currentFile}`);
+        */
     });
 
     /**
      * add annotation to selections
      */
     createCommand(context, 'annotate.addAnnotation', async (args, thisArg) => {
-        console.log('Add annotation', args, thisArg);
+        console.log("execute annotate.addAnnotation");
         let editor = vscode.window.activeTextEditor;
         // get selections, if not get current line
         let selection = editor?.selection;
@@ -52,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
         console.log(`file path: ${fsPath}`);
         let root = utils.getCurrentWorkspaceFolder();
         console.log('workspace folder', root?.fsPath);
-        let path = getNotePath();
+        let path = "";
         console.log(`path: ${path}`);
         if (path) {
             //await utils.openFile(path);
