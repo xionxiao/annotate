@@ -76,3 +76,17 @@ export function getCurrentWorkspaceFolder(): vscode.Uri | undefined {
     }
     return undefined;
 }
+
+
+/**
+ * is absolute path of Linux or windows
+ * @param path file path
+ * @returns true/false
+ */
+export function isAbsPath(path: string) {
+    return /^\/|^[A-Za-z]:\\/.test(path);
+}
+
+export function getNotePath() {
+
+}
