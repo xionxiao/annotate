@@ -83,7 +83,7 @@ export function getCurrentWorkspaceFolder(): vscode.Uri | undefined {
  * @param path file path
  * @returns true/false
  */
-export function isAbsPath(path: string) {
+export function isAbsolute(path: string) {
     return /^\/|^[A-Za-z]:\\/.test(path);
 }
 

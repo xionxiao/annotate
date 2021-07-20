@@ -18,7 +18,7 @@ export class AnnotateConfig {
         }
         console.log('get annotate.path: ', this.path);
         // path is not abstract path
-        if (!path.isAbsolute(this.path)) {
+        if (!utils.isAbsolute(this.path)) {
             const folder = utils.getCurrentWorkspaceFolder();
             if (folder && folder.path) {
                 this.path = path.join(folder.path, this.path);
@@ -27,7 +27,7 @@ export class AnnotateConfig {
         console.log('Config path: ', this.path);
         // if path not exist, create path
         if (!await utils.existFile(this.path!)) {
-            console.log('create path');
+            console.log(`create path ${this.path}`);
             // vscode.workspace.createDirectory(path).then();
             fs.mkdir(this.path, { recursive: true }, (err: Error) => {
                 if (err) {
