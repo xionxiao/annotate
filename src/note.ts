@@ -40,19 +40,28 @@ export class AnnotateConfig {
 }
 
 export class Note {
-    // source file annotate to
-    readonly sourceFile: vscode.Uri;
+    // source file path, should be relative path
+    readonly sourceFile: string;
     // selection from
     readonly from: vscode.Position;
     // selection to
     readonly to: vscode.Position;
+    // selection content
+    readonly selection: string;
     // markdown note content
     note: vscode.MarkdownString | string | undefined;
 
-    constructor(sourceFile: vscode.Uri, from: vscode.Position, to: vscode.Position) {
+    /**
+     * Constuctor
+     * @param sourceFile : source file path, should be relative path
+     * @param from : selection start position
+     * @param to : selection end postion
+     */
+    constructor(sourceFile: string, from: vscode.Position, to: vscode.Position, selection: string) {
         this.sourceFile = sourceFile;
         this.from = from;
         this.to = to;
+        this.selection = selection;
     }
 
     /**
