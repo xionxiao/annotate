@@ -6,33 +6,33 @@ const fs = require('fs');
 const DEFUALT_PATH = '.vscode/.annotate';
 
 export class AnnotateConfig {
-    // root path of note
-    path: string | undefined;
+    // root path to store notes, which is absolute path
+    rootPath: string | undefined;
 
     // get configures from settings.json
     async loadConfigs() {
         const config = vscode.workspace.getConfiguration();
-        this.path = config.get('annotate.path', "");
-        if (!this.path) {
-            this.path = DEFUALT_PATH;
+        this.rootPath = config.get('annotate.path', "");
+        if (!this.rootPath) {
+            this.rootPath = DEFUALT_PATH;
         }
-        console.log('get annotate.path: ', this.path);
+        console.log('get annotate.path: ', this.rootPath);
         // path is not abstract path
-        if (!utils.isAbsolute(this.path)) {
+        if (!utils.isAbsolute(this.rootPath)) {
             const folder = utils.getCurrentWorkspaceFolder();
             if (folder && folder.path) {
-                this.path = path.join(folder.path, this.path);
+                this.rootPath = path.join(folder.path, this.rootPath);
             }
         }
-        console.log('Config path: ', this.path);
+        console.log('Config path: ', this.rootPath);
         // if path not exist, create path
-        if (!await utils.existFile(this.path!)) {
-            console.log(`create path ${this.path}`);
+        if (!await utils.existFile(this.rootPath!)) {
+            console.log(`create path ${this.rootPath}`);
             // vscode.workspace.createDirectory(path).then();
-            fs.mkdir(this.path, { recursive: true }, (err: Error) => {
+            fs.mkdir(this.rootPath, { recursive: true }, (err: Error) => {
                 if (err) {
                     console.log(`mkdir error: ${err}`);
-                    this.path = undefined;
+                    this.rootPath = undefined;
                 }
             });
         }

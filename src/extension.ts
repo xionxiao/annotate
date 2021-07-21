@@ -1,11 +1,18 @@
 import * as vscode from 'vscode';
 import { AnnotateConfig } from './note';
+import { Note } from './note';
 import * as utils from './utils';
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('extension "annotate" is now active!');
-    let config = new AnnotateConfig();
-    config.loadConfigs();
+    // global configuration
+    let gConfig = new AnnotateConfig();
+    gConfig.loadConfigs();
+    // global NodeList map
+    let gNoteMap: {
+        [hash: string]: [Note] | []
+    } = {};
+    // global NodeList
 
     /**
      * open annotation panel
@@ -13,11 +20,25 @@ export function activate(context: vscode.ExtensionContext) {
      */
     createCommand(context, 'annotate.openAnnotation', async () => {
         console.log("execute annotate.openAnnotation");
-        /*
+        console.log(`config ${JSON.stringify(gConfig)}`);
+        // get current file path
         let editor = vscode.window.activeTextEditor;
         // current file path
-        let fsPath = editor?.document.uri.fsPath ?? "";
-        console.log(`file path: ${fsPath}`);
+        let filename = editor?.document.fileName;
+        console.log(`file ${filename} `);
+        if (filename && utils.isAbsolute(filename)) {
+            if (gNoteMap.hasOwnProperty(filename)) {
+                console.log(`get notes : ${gNoteMap[filename]}`);
+                // display note
+            } else {
+                console.log(`can't get notes`);
+                // load notes from file
+                gNoteMap[filename] = [];
+            }
+        } else {
+            toast(`active document is null or unsaved!`);
+        }
+        /*
         let root = utils.getCurrentWorkspaceFolder();
         console.log('workspace folder', root?.fsPath);
 

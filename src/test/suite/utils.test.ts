@@ -28,10 +28,10 @@ suite("Utils Test", function () {
             "file://uri"
         ];
         map(absPath, p => {
-            assert.strictEqual(utils.isAbsPath(p), true);
+            assert.strictEqual(utils.isAbsolute(p), true);
         });
         map(notAbsPath, p => {
-            assert.strictEqual(utils.isAbsPath(p), false);
+            assert.strictEqual(utils.isAbsolute(p), false);
         });
     });
 });
