@@ -14,6 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
     } = {};
     // global NodeList
 
+
     /**
      * open annotation panel
      * show annotations of current file
@@ -26,6 +27,11 @@ export function activate(context: vscode.ExtensionContext) {
         // current file path
         let filename = editor?.document.fileName;
         console.log(`file ${filename} `);
+        let workspaceFolder = utils.getCurrentWorkspaceFolder()?.fsPath;
+        if (workspaceFolder) {
+            filename = utils.getRelativePath(workspaceFolder, filename!);
+        }
+        console.log(`relative file path : ${filename}`);
         if (filename && utils.isAbsolute(filename)) {
             if (gNoteMap.hasOwnProperty(filename)) {
                 console.log(`get notes : ${gNoteMap[filename]}`);
@@ -101,6 +107,27 @@ export function activate(context: vscode.ExtensionContext) {
             }
         }
     });
+}
+
+/**
+ * Load notes from sourceFile
+ * @param rootPath absolute path of notes folder
+ * @param sourceFile relative file path of source file
+ * @returns Note Array
+ */
+async function loadNotes(rootPath: string, sourceFile: string): Promise<[Note] | []> {
+    let noteFile = rootPath + '/' + sourceFile + '.json';
+    if (await utils.existFile(noteFile)) {
+        let content = await utils.readFile(noteFile);
+        let notes = <Note | [Note]>JSON.parse(content);
+        if (Array.isArray(notes)) {
+            return notes;
+        } else {
+            return [notes];
+        }
+    } else {
+        return [];
+    }
 }
 
 /**

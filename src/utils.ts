@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { TextEncoder } from 'util';
+import { platform } from 'process';
 
 export async function readFile(path: string): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -87,6 +88,18 @@ export function isAbsolute(path: string) {
     return /^\/|^[A-Za-z]:\\/.test(path);
 }
 
-export function getNotePath() {
 
+/**
+ * Convert absolute path to relative
+ * @param basePath base path (absolute)
+ * @param path path to convert
+ * @returns 
+ */
+export function getRelativePath(basePath: string, path: string) {
+    let ends = (platform === 'win32' ? '\\' : '/');
+    if (!basePath.endsWith(ends)) {
+        basePath += ends;
+    }
+    let regex = new RegExp(`^${basePath}`);
+    return path.replace(regex, '');
 }
