@@ -92,8 +92,8 @@ export function isAbsolute(path: string) {
 /**
  * Convert absolute path to relative
  * @param basePath base path (absolute)
- * @param path path to convert
- * @returns 
+ * @param path path to convert (absolute)
+ * @returns the relative path of basePath or empty string
  */
 export function getRelativePath(basePath: string, path: string) {
     let ends = (platform === 'win32' ? '\\' : '/');
@@ -101,5 +101,8 @@ export function getRelativePath(basePath: string, path: string) {
         basePath += ends;
     }
     let regex = new RegExp(`^${basePath}`);
-    return path.replace(regex, '');
+    if (regex.test(path)) {
+        return path.replace(regex, '');
+    }
+    return '';
 }

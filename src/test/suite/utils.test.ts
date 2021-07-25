@@ -3,7 +3,7 @@ import { map } from "lodash";
 import * as utils from "../../utils";
 
 suite("Utils Test", function () {
-    test("File operation tests", async () => {
+    test("==> test file operation", async () => {
         // test file not exist
         let exist = await utils.existFile("nonExistFile");
         assert.strictEqual(false, exist);
@@ -15,7 +15,7 @@ suite("Utils Test", function () {
         // TODO: test on windows
     });
 
-    test("isAbsolute path", () => {
+    test("==> test isAbsolute path", () => {
         let absPath = [
             "C:\\windows",
             "D:\\",
@@ -32,6 +32,19 @@ suite("Utils Test", function () {
         });
         map(notAbsPath, p => {
             assert.strictEqual(utils.isAbsolute(p), false);
+        });
+    });
+
+    test("==> test getRelative path", () => {
+        let testData = [
+            ['/a/b/c', '/a/b/c/d/', 'd/'],
+            ['/a/b/c/', '/a/b/c/d/e', 'd/e'],
+            ['a/b/c', 'a/b/c/d/', 'd/'],
+            ['/a/b/c', '/a/b/', '']
+        ];
+
+        map(testData, d => {
+            assert.strictEqual(utils.getRelativePath(d[0], d[1]), d[2]);
         });
     });
 });
