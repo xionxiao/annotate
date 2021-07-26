@@ -32,32 +32,16 @@ export function activate(context: vscode.ExtensionContext) {
             filename = utils.getRelativePath(workspaceFolder, filename!);
         }
         console.log(`relative file path : ${filename}`);
-        if (filename && utils.isAbsolute(filename)) {
-            if (gNoteMap.hasOwnProperty(filename)) {
-                console.log(`get notes : ${gNoteMap[filename]}`);
-                // display note
-            } else {
-                console.log(`can't get notes`);
+        if (filename) {
+            if (!gNoteMap.hasOwnProperty(filename)) {
+                console.log(`global notes not exist`);
                 // load notes from file
-                gNoteMap[filename] = [];
+                gNoteMap[filename] = await loadNotes(workspaceFolder!, filename);
             }
+            console.log(`get notes : ${gNoteMap[filename]}`);
         } else {
             toast(`active document is null or unsaved!`);
         }
-        /*
-        let root = utils.getCurrentWorkspaceFolder();
-        console.log('workspace folder', root?.fsPath);
-
-        let currentFile = editor?.document.fileName;
-        if (vscode.workspace.workspaceFolders) {
-            let path = vscode.workspace.workspaceFile;
-            console.log(`workspaceFile: ${path}`);
-            for (let i in vscode.workspace.workspaceFolders) {
-                console.log(`${i} - ${vscode.workspace.workspaceFolders[i].uri.fsPath}`);
-            }
-        }
-        console.log(`currentFile: ${currentFile}`);
-        */
     });
 
     /**
