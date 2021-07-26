@@ -6,14 +6,12 @@ import * as utils from './utils';
 export function activate(context: vscode.ExtensionContext) {
     console.log('extension "annotate" is now active!');
     // global configuration
-    let gConfig = new AnnotateConfig();
-    gConfig.loadConfigs();
+    let gConfig = AnnotateConfig.getInstance();
     // global NodeList map
     let gNoteMap: {
         [hash: string]: [Note] | []
     } = {};
     // global NodeList
-
 
     /**
      * open annotation panel
@@ -22,23 +20,15 @@ export function activate(context: vscode.ExtensionContext) {
     createCommand(context, 'annotate.openAnnotation', async () => {
         console.log("execute annotate.openAnnotation");
         console.log(`config ${JSON.stringify(gConfig)}`);
-        // get current file path
-        let editor = vscode.window.activeTextEditor;
-        // current file path
-        let filename = editor?.document.fileName;
-        console.log(`file ${filename} `);
-        let workspaceFolder = utils.getCurrentWorkspaceFolder()?.fsPath;
-        if (workspaceFolder) {
-            filename = utils.getRelativePath(workspaceFolder, filename!);
-        }
-        console.log(`relative file path : ${filename}`);
+        let filename = getActiveFileRelativePath();
         if (filename) {
             if (!gNoteMap.hasOwnProperty(filename)) {
                 console.log(`global notes not exist`);
                 // load notes from file
-                gNoteMap[filename] = await loadNotes(workspaceFolder!, filename);
+                gNoteMap[filename] = await loadNotes(filename);
             }
             console.log(`get notes : ${gNoteMap[filename]}`);
+            // TODO: display notes
         } else {
             toast(`active document is null or unsaved!`);
         }
@@ -99,8 +89,10 @@ export function activate(context: vscode.ExtensionContext) {
  * @param sourceFile relative file path of source file
  * @returns Note Array
  */
-async function loadNotes(rootPath: string, sourceFile: string): Promise<[Note] | []> {
-    let noteFile = rootPath + '/' + sourceFile + '.json';
+async function loadNotes(sourceFile: string): Promise<[Note] | []> {
+    
+    let config = AnnotateConfig.getInstance();
+    let noteFile = config.rootPath + '/' + sourceFile + '.json';
     if (await utils.existFile(noteFile)) {
         let content = await utils.readFile(noteFile);
         let notes = <Note | [Note]>JSON.parse(content);
@@ -112,6 +104,22 @@ async function loadNotes(rootPath: string, sourceFile: string): Promise<[Note] |
     } else {
         return [];
     }
+}
+
+function getActiveFileRelativePath(): string {
+    // get current file path
+    let editor = vscode.window.activeTextEditor;
+    // current file path
+    let filename = editor?.document.fileName || "";
+    console.log(`file ${filename} `);
+    let workspaceFolder = utils.getCurrentWorkspaceFolder()?.fsPath;
+    if (workspaceFolder) {
+        filename = utils.getRelativePath(workspaceFolder, filename!);
+    } else {
+        return "";
+    }
+    console.log(`relative file path : ${filename}`);
+    return filename;
 }
 
 /**

@@ -12,7 +12,7 @@
   "activationEvents": [
     "onCommand:annotate.addAnnotation",
     "onCommand:annotate.openAnnotation",
-    "workspaceContains:.vscode/.annotate",
+    "workspaceContains:.vscode/annotate",
     "onWebviewPanel:AnnoPanel"
   ],
   "main": "./dist/extension.js",
