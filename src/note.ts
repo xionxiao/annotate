@@ -8,6 +8,14 @@ const DEFUALT_PATH = '.vscode/.annotate';
 export class AnnotateConfig {
     // root path to store notes, which is absolute path
     rootPath: string | undefined;
+    static instance: AnnotateConfig | undefined;
+
+    static getInstance() {
+        if (!AnnotateConfig.instance) {
+            AnnotateConfig.instance = new AnnotateConfig();
+        }
+        return AnnotateConfig.instance;
+    }
 
     // get configures from settings.json
     async loadConfigs() {
