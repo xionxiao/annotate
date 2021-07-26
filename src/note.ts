@@ -76,7 +76,7 @@ export class Note {
      * Display position from-to
      * @returns string e.g. L30:1-32:15, L30-32, L30 
      */
-    toString() {
+    toString(): string {
         let from = `L${this.from.line}${this.from ? ':' + this.from.character : ''}`;
         if (this.to) {
             return `${from}-${this.to.line}${this.to ? ':' + this.to.character : ''}`;
