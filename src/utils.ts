@@ -106,3 +106,11 @@ export function getRelativePath(basePath: string, path: string) {
     }
     return '';
 }
+
+/**
+ * check if vscode has opened any workspace
+ * @returns true / false
+ */
+export function hasWorkspace() {
+    return vscode.workspace.workspaceFolders !== undefined;
+}
