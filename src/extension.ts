@@ -17,12 +17,8 @@ export function activate(context: vscode.ExtensionContext) {
     let gConfig = AnnotateConfig.getInstance();
     // global NodeList map
     let gNoteMap: NoteMap = {};
-    // global NodeList
 
-    /**
-     * open annotation panel
-     * show annotations of current file
-     */
+    // open annotation
     createCommand(context, 'annotate.openAnnotation', async () => {
         console.log("execute annotate.openAnnotation");
         console.log(`config ${JSON.stringify(gConfig)}`);
@@ -40,26 +36,19 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    /**
-     * add annotation to selections
-     */
+    // add annotation to selections
     createCommand(context, 'annotate.addAnnotation', async () => {
         console.log("execute annotate.addAnnotation");
         let editor = vscode.window.activeTextEditor;
-        // get selections, if not get current line
-        let selection = editor?.selection;
-        if (!selection) {
-            return;
-        }
+        // get selections
+        // selection always exist because set {"when": "editorHasSelection"}
+        let selection = editor!.selection;
         console.log(`selection: ${JSON.stringify(selection)}`);
-        // get select text
-        let text = editor?.document.getText(selection) || "";
+        let text = editor!.document.getText(selection);
         console.log(`select text: ${text}`);
-        // get file
+        // get file relative path
         let file = getActiveFileRelativePath();
-        let note:Note = new Note(file, selection.start, selection.end, text);
-        console.log('get note', JSON.stringify(note));
-        console.log('gMap', JSON.stringify(gNoteMap));
+        let note = new Note(file, selection.start, selection.end, text);
         if (!gNoteMap.hasOwnProperty(file)) {
             gNoteMap[file] = {};
         }
