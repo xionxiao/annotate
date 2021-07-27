@@ -48,7 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
         console.log(`select text: ${text}`);
         // get file relative path
         let file = getActiveFileRelativePath();
-        let note = new Note(file, selection.start, selection.end, text);
+        let note = new Note(file, selection, text);
         if (!gNoteMap.hasOwnProperty(file)) {
             gNoteMap[file] = {};
         }

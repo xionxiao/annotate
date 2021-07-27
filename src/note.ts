@@ -50,12 +50,10 @@ export class AnnotateConfig {
 export class Note {
     // source file path, should be relative path
     readonly sourceFile: string;
-    // selection from
-    readonly from: vscode.Position;
-    // selection to
-    readonly to: vscode.Position;
+    // range of source code
+    readonly range: vscode.Range;
     // selection content
-    readonly selection: string;
+    readonly text: string;
     // markdown note content
     note: vscode.MarkdownString | string | undefined;
 
@@ -65,11 +63,10 @@ export class Note {
      * @param from : selection start position
      * @param to : selection end postion
      */
-    constructor(sourceFile: string, from: vscode.Position, to: vscode.Position, selection: string) {
+    constructor(sourceFile: string, range: vscode.Range, text: string) {
         this.sourceFile = sourceFile;
-        this.from = from;
-        this.to = to;
-        this.selection = selection;
+        this.range = range;
+        this.text = text;
     }
 
     /**
@@ -77,12 +74,9 @@ export class Note {
      * @returns string e.g. L30:1-32:15, L30-32, L30 
      */
     toString(): string {
-        let from = `L${this.from.line}${this.from ? ':' + this.from.character : ''}`;
-        if (this.to) {
-            return `${from}-${this.to.line}${this.to ? ':' + this.to.character : ''}`;
-        } else {
-            return from;
-        }
+        let start = this.range.start;
+        let end = this.range.end;
+        return `L${start.line}:${start.character}-${end.line}:${end.character}`;
     }
 
     /**
