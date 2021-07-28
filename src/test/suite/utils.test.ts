@@ -41,10 +41,11 @@ suite("Utils Test", function () {
             ['/a/b/c/', '/a/b/c/d/e', 'd/e'],
             ['a/b/c', 'a/b/c/d/', 'd/'],
             ['/a/b/c', '/a/b/', '']
+            // TODO: basePath is empty, test default workspace folder
         ];
 
         map(testData, d => {
-            assert.strictEqual(utils.getRelativePath(d[0], d[1]), d[2]);
+            assert.strictEqual(utils.getRelativePath(d[1], d[0]), d[2]);
         });
     });
 });

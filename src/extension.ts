@@ -88,7 +88,7 @@ function getActiveFileRelativePath(): string {
     console.log(`file ${filename} `);
     let workspaceFolder = utils.getCurrentWorkspaceFolder()?.fsPath;
     if (workspaceFolder) {
-        filename = utils.getRelativePath(workspaceFolder, filename!);
+        filename = utils.getRelativePath(filename!);
     } else {
         return "";
     }

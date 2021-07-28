@@ -91,12 +91,19 @@ export function isAbsolute(path: string) {
 
 /**
  * Convert absolute path to relative
- * @param basePath base path (absolute)
  * @param path path to convert (absolute)
+ * @param basePath base path (absolute), defaults to workspace path
  * @returns the relative path of basePath or empty string
  */
-export function getRelativePath(basePath: string, path: string) {
+export function getRelativePath(path: string, basePath?: string) {
     let ends = (platform === 'win32' ? '\\' : '/');
+    if (!basePath) {
+        let workspace = getCurrentWorkspaceFolder();
+        if (!workspace) {
+            return '';
+        }
+        basePath = workspace.fsPath;
+    }
     if (!basePath.endsWith(ends)) {
         basePath += ends;
     }
