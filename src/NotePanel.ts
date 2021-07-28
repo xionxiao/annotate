@@ -2,12 +2,12 @@ import * as vscode from 'vscode';
 import { readFile } from './utils';
 import _ = require('lodash');
 
-export class AnnotationPanel {
+export class NotePanel {
     /**
      * 
      */
     public static readonly viewType = "AnnoPanel";
-    public static instance: AnnotationPanel | undefined;
+    public static instance: NotePanel | undefined;
 
     private readonly panel: vscode.WebviewPanel;
     private readonly extensionUri: vscode.Uri;
@@ -19,7 +19,7 @@ export class AnnotationPanel {
         this.time = new Date();
         this.extensionUri = context.extensionUri;
         this.panel = vscode.window.createWebviewPanel(
-            AnnotationPanel.viewType,
+            NotePanel.viewType,
             title,
             vscode.ViewColumn.Two,
             {
@@ -32,11 +32,11 @@ export class AnnotationPanel {
     }
 
     public static getInstance(context: vscode.ExtensionContext) {
-        if (AnnotationPanel.instance) {
-            return AnnotationPanel.instance;
+        if (NotePanel.instance) {
+            return NotePanel.instance;
         } else {
-            AnnotationPanel.instance = new AnnotationPanel(context);
-            return AnnotationPanel.instance;
+            NotePanel.instance = new NotePanel(context);
+            return NotePanel.instance;
         }
     }
 
@@ -71,7 +71,7 @@ export class AnnotationPanel {
         let uri = vscode.Uri.joinPath(this.extensionUri, 'resource/html', 'index.html');
         try {
             let data = await readFile(uri.path);
-            const nonce = AnnotationPanel.getNonce();
+            const nonce = NotePanel.getNonce();
             const cssUri = this.loadResource("resource/css", "style.css");
             const scriptUri = this.loadResource("resource/js", "main.js");
             const webview = this.panel.webview;

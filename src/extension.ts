@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { AnnotateCodeLensProvider } from './AnnotateCodeLensProvider';
+import { NoteCodeLensProvider } from './NoteLensProvider';
 import { AnnotateConfig } from './note';
 import { Note, NotePos } from './note';
 import * as utils from './utils';
@@ -10,7 +10,8 @@ export function activate(context: vscode.ExtensionContext) {
     // global configuration
     let gConfig = AnnotateConfig.getInstance();
 
-    vscode.languages.registerCodeLensProvider('*', new AnnotateCodeLensProvider());
+    // reigister CodeLensProvider to show notes
+    vscode.languages.registerCodeLensProvider('*', new NoteCodeLensProvider());
 
     // open annotation
     createCommand(context, 'annotate.openAnnotation', async () => {

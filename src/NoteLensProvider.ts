@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as utils from './utils';
 import { AnnotateConfig } from './note';
 
-export class AnnotateCodeLensProvider implements vscode.CodeLensProvider {
+export class NoteCodeLensProvider implements vscode.CodeLensProvider {
     provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.CodeLens[]> {
         let config = AnnotateConfig.getInstance();
         let fileName = utils.getRelativePath(document.fileName);
