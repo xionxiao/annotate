@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { AnnotateCodeLensProvider } from './AnnotateCodeLensProvider';
 import { AnnotateConfig } from './note';
 import { Note, NotePos } from './note';
 import * as utils from './utils';
@@ -8,6 +9,8 @@ export function activate(context: vscode.ExtensionContext) {
     console.log('extension "annotate" is now active!');
     // global configuration
     let gConfig = AnnotateConfig.getInstance();
+
+    vscode.languages.registerCodeLensProvider('*', new AnnotateCodeLensProvider());
 
     // open annotation
     createCommand(context, 'annotate.openAnnotation', async () => {

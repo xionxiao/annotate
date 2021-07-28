@@ -1,11 +1,24 @@
 import * as vscode from 'vscode';
+import * as utils from './utils';
+import { AnnotateConfig } from './note';
 
 export class AnnotateCodeLensProvider implements vscode.CodeLensProvider {
-    constructor() {
-
-    }
-
     provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.CodeLens[]> {
-        throw new Error('Method not implemented.');
+        let config = AnnotateConfig.getInstance();
+        let fileName = utils.getRelativePath(document.fileName);
+        if (config.notes && config.notes.hasOwnProperty(fileName)) {
+            let codeLens: vscode.CodeLens[] = [];
+            Object.values(config.notes[fileName]).map(n => {
+                codeLens.push(new vscode.CodeLens(n.range, {
+                    title: n.toString(),
+                    command: "annotate.openAnnotation"
+                }));
+            });
+            return codeLens;
+        }
+        return [];
+    }
+    public resolveCodeLens(codeLens: vscode.CodeLens, token: vscode.CancellationToken) {
+        return null;
     }
 }
