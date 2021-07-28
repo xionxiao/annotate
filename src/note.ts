@@ -5,9 +5,18 @@ const path = require('path');
 const fs = require('fs');
 const DEFUALT_PATH = '.vscode/.annotate';
 
+export type NoteMap = {
+    [filename: string]: NotePos
+};
+
+export type NotePos = {
+    [position: string]: Note
+};
+
 export class AnnotateConfig {
     // root path to store notes, which is absolute path
     rootPath: string | undefined;
+    notes: NoteMap = {};
     static instance: AnnotateConfig | undefined;
 
     static getInstance() {

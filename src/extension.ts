@@ -1,22 +1,13 @@
 import * as vscode from 'vscode';
 import { AnnotateConfig } from './note';
-import { Note } from './note';
+import { Note, NotePos } from './note';
 import * as utils from './utils';
 
-type NoteMap = {
-    [filename: string]: NotePos
-};
-
-type NotePos = {
-    [position: string]: Note
-};
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('extension "annotate" is now active!');
     // global configuration
     let gConfig = AnnotateConfig.getInstance();
-    // global NodeList map
-    let gNoteMap: NoteMap = {};
 
     // open annotation
     createCommand(context, 'annotate.openAnnotation', async () => {
@@ -24,12 +15,13 @@ export function activate(context: vscode.ExtensionContext) {
         console.log(`config ${JSON.stringify(gConfig)}`);
         let filename = getActiveFileRelativePath();
         if (filename) {
-            if (!gNoteMap.hasOwnProperty(filename)) {
+            let notes = gConfig.notes;
+            if (!notes.hasOwnProperty(filename)) {
                 console.log(`load notes`);
                 // load notes from file
-                gNoteMap[filename] = await loadNotes(filename);
+                notes[filename] = await loadNotes(filename);
             }
-            console.log(`get notes : ${gNoteMap[filename]}`);
+            console.log(`get notes : ${notes[filename]}`);
             // TODO: display notes
         } else {
             toast(`active document is null or unsaved!`);
@@ -49,10 +41,11 @@ export function activate(context: vscode.ExtensionContext) {
         // get file relative path
         let file = getActiveFileRelativePath();
         let note = new Note(file, selection, text);
-        if (!gNoteMap.hasOwnProperty(file)) {
-            gNoteMap[file] = {};
+        let notes = gConfig.notes;
+        if (!notes.hasOwnProperty(file)) {
+            notes[file] = {};
         }
-        gNoteMap[file][note.toString()] = note;
+        notes[file][note.toString()] = note;
     });
 }
 
