@@ -10,7 +10,7 @@ export class NoteCodeLensProvider implements vscode.CodeLensProvider {
             let codeLens: vscode.CodeLens[] = [];
             Object.values(config.notes[fileName]).map(n => {
                 codeLens.push(new vscode.CodeLens(n.range, {
-                    title: n.toString(),
+                    title: n.text,
                     command: "annotate.openAnnotation"
                 }));
             });

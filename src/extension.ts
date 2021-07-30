@@ -42,14 +42,25 @@ export function activate(context: vscode.ExtensionContext) {
         console.log(`selection: ${JSON.stringify(selection)}`);
         let text = editor!.document.getText(selection);
         console.log(`select text: ${text}`);
-        // get file relative path
-        let file = getActiveFileRelativePath();
-        let note = new Note(file, selection, text);
-        let notes = gConfig.notes;
-        if (!notes.hasOwnProperty(file)) {
-            notes[file] = {};
-        }
-        notes[file][note.toString()] = note;
+        vscode.window.showInputBox({
+            title: "Enter a short note",
+            value: `${utils.rangeToString(selection)}:${text}`
+        }).then(noteText=> {
+            console.log('====>', text);
+            if (noteText) {
+                // get file relative path
+                let file = getActiveFileRelativePath();
+                let note = new Note(file, selection, noteText);
+                let notes = gConfig.notes;
+                if (!notes.hasOwnProperty(file)) {
+                    notes[file] = {};
+                }
+                notes[file][note.toString()] = note;
+            }
+        });
+        /*
+        
+        */
     });
 }
 
@@ -59,14 +70,14 @@ export function activate(context: vscode.ExtensionContext) {
  * @returns NotePos Array
  */
 async function loadNotes(sourceFile: string): Promise<NotePos> {
-    
+
     let config = AnnotateConfig.getInstance();
     let noteFile = config.rootPath + '/' + sourceFile + '.json';
     if (await utils.existFile(noteFile)) {
         let content = await utils.readFile(noteFile);
         let notes = JSON.parse(content);
         if (Array.isArray(notes)) {
-            return notes.reduce((n,r) => r[n.toString()] = n, {});
+            return notes.reduce((n, r) => r[n.toString()] = n, {});
         } else {
             const error = new Error("note file parse error!");
             toast(error.message);

@@ -61,7 +61,7 @@ export class Note {
     readonly sourceFile: string;
     // range of source code
     readonly range: vscode.Range;
-    // selection content
+    // Note title or short description
     readonly text: string;
     // markdown note content
     note: vscode.MarkdownString | string | undefined;
@@ -83,9 +83,7 @@ export class Note {
      * @returns string e.g. L30:1-32:15, L30-32, L30 
      */
     toString(): string {
-        let start = this.range.start;
-        let end = this.range.end;
-        return `L${start.line}:${start.character}-${end.line}:${end.character}`;
+        return utils.rangeToString(this.range);
     }
 
     /**

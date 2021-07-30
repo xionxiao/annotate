@@ -121,3 +121,13 @@ export function getRelativePath(path: string, basePath?: string) {
 export function hasWorkspace() {
     return vscode.workspace.workspaceFolders !== undefined;
 }
+
+/**
+ * Convert Range to string representation
+ * L35:15-L37:0
+ * @param range 
+ * @returns string representation
+ */
+export function rangeToString(range: vscode.Range): string {
+    return `L${range.start.line}:${range.start.character}-${range.end.line}:${range.end.character}`;
+}
