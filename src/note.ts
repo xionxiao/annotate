@@ -62,7 +62,7 @@ export class Note {
     // range of source code
     readonly range: vscode.Range;
     // Note title or short description
-    readonly text: string;
+    readonly title: string;
     // markdown note content
     note: vscode.MarkdownString | string | undefined;
 
@@ -72,10 +72,10 @@ export class Note {
      * @param from : selection start position
      * @param to : selection end postion
      */
-    constructor(sourceFile: string, range: vscode.Range, text: string) {
+    constructor(sourceFile: string, range: vscode.Range, title: string) {
         this.sourceFile = sourceFile;
         this.range = range;
-        this.text = text;
+        this.title = title;
     }
 
     /**

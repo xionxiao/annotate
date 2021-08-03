@@ -16,7 +16,6 @@ export function activate(context: vscode.ExtensionContext) {
     // open annotation
     createCommand(context, 'annotate.openAnnotation', async () => {
         console.log("execute annotate.openAnnotation");
-        console.log(`config ${JSON.stringify(gConfig)}`);
         let filename = getActiveFileRelativePath();
         if (filename) {
             let notes = gConfig.notes;
@@ -41,10 +40,9 @@ export function activate(context: vscode.ExtensionContext) {
         let selection = editor!.selection;
         console.log(`selection: ${JSON.stringify(selection)}`);
         let text = editor!.document.getText(selection);
-        console.log(`select text: ${text}`);
         vscode.window.showInputBox({
-            title: "Enter a short note",
-            value: `${utils.rangeToString(selection)}:${text}`
+            title: "Enter note title",
+            value: `${text}`
         }).then(noteText=> {
             console.log('====>', text);
             if (noteText) {
