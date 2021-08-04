@@ -3,6 +3,7 @@ import { NoteCodeLensProvider } from './NoteLensProvider';
 import { AnnotateConfig } from './note';
 import { Note, NotePos } from './note';
 import * as utils from './utils';
+import * as _ from 'lodash';
 
 
 export function activate(context: vscode.ExtensionContext) {
@@ -12,6 +13,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     // reigister CodeLensProvider to show notes
     vscode.languages.registerCodeLensProvider('*', new NoteCodeLensProvider());
+
+    const decorator = vscode.window.createTextEditorDecorationType({
+        gutterIconPath: vscode.Uri.joinPath(context.extensionUri, "resource/images/note.svg"),
+        gutterIconSize: "85%"
+    });
 
     // open annotation
     createCommand(context, 'annotate.openAnnotation', async () => {
@@ -42,12 +48,20 @@ export function activate(context: vscode.ExtensionContext) {
         let text = editor!.document.getText(selection);
         vscode.window.showInputBox({
             title: "Enter note title",
-            value: `${text}`
-        }).then(title=> {
+            // get first line as input suggestion
+            value: text.split('\n')[0]
+        }).then(title => {
             if (title) {
                 // get file relative path
                 let file = getActiveFileRelativePath();
                 gConfig.addNote(file, selection, title);
+                let ranges = _.reduce(gConfig.notes[file], (r:vscode.Range[], v) => {
+                    r.push(new vscode.Range(v.range.start, v.range.start));
+                    return r;
+                }, []);
+                vscode.window.activeTextEditor?.setDecorations(
+                    decorator,
+                    ranges);
             }
         });
     });
@@ -59,7 +73,6 @@ export function activate(context: vscode.ExtensionContext) {
  * @returns NotePos Array
  */
 async function loadNotes(sourceFile: string): Promise<NotePos> {
-
     let config = AnnotateConfig.getInstance();
     let noteFile = config.rootPath + '/' + sourceFile + '.json';
     if (await utils.existFile(noteFile)) {
