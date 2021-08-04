@@ -54,6 +54,15 @@ export class AnnotateConfig {
             });
         }
     }
+
+    addNote(file: string, range: vscode.Range, title: string) {
+        let note = new Note(file, range, title);
+        let notes = AnnotateConfig.getInstance().notes;
+        if (!notes.hasOwnProperty(file)) {
+            notes[file] = {};
+        }
+        notes[file][note.toString()] = note;
+    }
 }
 
 export class Note {
@@ -62,7 +71,7 @@ export class Note {
     // range of source code
     readonly range: vscode.Range;
     // Note title or short description
-    readonly title: string;
+    title: string;
     // markdown note content
     note: vscode.MarkdownString | string | undefined;
 
@@ -72,10 +81,11 @@ export class Note {
      * @param from : selection start position
      * @param to : selection end postion
      */
-    constructor(sourceFile: string, range: vscode.Range, title: string) {
+    constructor(sourceFile: string, range: vscode.Range, title: string, note?: vscode.MarkdownString | string) {
         this.sourceFile = sourceFile;
         this.range = range;
         this.title = title;
+        this.note = note;
     }
 
     /**

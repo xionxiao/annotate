@@ -43,22 +43,13 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInputBox({
             title: "Enter note title",
             value: `${text}`
-        }).then(noteText=> {
-            console.log('====>', text);
-            if (noteText) {
+        }).then(title=> {
+            if (title) {
                 // get file relative path
                 let file = getActiveFileRelativePath();
-                let note = new Note(file, selection, noteText);
-                let notes = gConfig.notes;
-                if (!notes.hasOwnProperty(file)) {
-                    notes[file] = {};
-                }
-                notes[file][note.toString()] = note;
+                gConfig.addNote(file, selection, title);
             }
         });
-        /*
-        
-        */
     });
 }
 
