@@ -78,6 +78,26 @@ export function getCurrentWorkspaceFolder(): vscode.Uri | undefined {
     return undefined;
 }
 
+/**
+ * Get relative path of active file
+ * @returns relative path of active file
+ */
+ export function getActiveFileRelativePath(): string {
+    // get current file path
+    let editor = vscode.window.activeTextEditor;
+    // current file path
+    let filename = editor?.document.fileName || "";
+    console.log(`file ${filename} `);
+    let workspaceFolder = getCurrentWorkspaceFolder()?.fsPath;
+    if (workspaceFolder) {
+        filename = getRelativePath(filename!);
+    } else {
+        return "";
+    }
+    console.log(`relative file path : ${filename}`);
+    return filename;
+}
+
 
 /**
  * is absolute path of Linux or windows

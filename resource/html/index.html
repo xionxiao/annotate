@@ -16,11 +16,16 @@
 
     <link href="<%= cssUri %>" rel="stylesheet">
 
-    <title>New Annotation</title>
+    <title>
+        <%= filename %>
+    </title>
 </head>
 
 <body>
-    <h1>new annotation</h1>
+    <h1>
+        <%= filename %>
+    </h1>
+    <p><h2> note title </h2></p>
     <textarea class="text-area"></textarea>
 
     <script nonce="<%= nonce %>" src="<%= scriptUri %>"></script>

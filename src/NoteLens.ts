@@ -2,6 +2,10 @@ import * as vscode from 'vscode';
 import * as utils from './utils';
 import { AnnotateConfig } from './note';
 
+
+/**
+ * Show CodeLens for a note
+ */
 export class NoteCodeLensProvider implements vscode.CodeLensProvider {
     provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.CodeLens[]> {
         let config = AnnotateConfig.getInstance();
@@ -18,6 +22,7 @@ export class NoteCodeLensProvider implements vscode.CodeLensProvider {
         }
         return [];
     }
+
     public resolveCodeLens(codeLens: vscode.CodeLens, token: vscode.CancellationToken) {
         return null;
     }

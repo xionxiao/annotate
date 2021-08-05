@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
-import { NoteCodeLensProvider } from './NoteLensProvider';
+import { NoteCodeLensProvider } from './NoteLens';
 import { AnnotateConfig } from './note';
-import { Note, NotePos } from './note';
+import { NotePos } from './note';
 import * as utils from './utils';
 import * as _ from 'lodash';
+import { NotePanel } from './NotePanel';
 
 
 export function activate(context: vscode.ExtensionContext) {
@@ -19,9 +20,11 @@ export function activate(context: vscode.ExtensionContext) {
         gutterIconSize: "85%"
     });
 
-    // open annotation
+    // open annotation webview
     createCommand(context, 'annotate.openAnnotation', async () => {
         console.log("execute annotate.openAnnotation");
+        NotePanel.getInstance(context).show();
+        /*
         let filename = getActiveFileRelativePath();
         if (filename) {
             let notes = gConfig.notes;
@@ -35,6 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
         } else {
             toast(`active document is null or unsaved!`);
         }
+        */
     });
 
     // add annotation to selections
@@ -53,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
         }).then(title => {
             if (title) {
                 // get file relative path
-                let file = getActiveFileRelativePath();
+                let file = utils.getActiveFileRelativePath();
                 gConfig.addNote(file, selection, title);
                 let ranges = _.reduce(gConfig.notes[file], (r:vscode.Range[], v) => {
                     r.push(new vscode.Range(v.range.start, v.range.start));
@@ -92,26 +96,6 @@ async function loadNotes(sourceFile: string): Promise<NotePos> {
     }
 }
 
-
-/**
- * Get relative path of active file
- * @returns relative path of active file
- */
-function getActiveFileRelativePath(): string {
-    // get current file path
-    let editor = vscode.window.activeTextEditor;
-    // current file path
-    let filename = editor?.document.fileName || "";
-    console.log(`file ${filename} `);
-    let workspaceFolder = utils.getCurrentWorkspaceFolder()?.fsPath;
-    if (workspaceFolder) {
-        filename = utils.getRelativePath(filename!);
-    } else {
-        return "";
-    }
-    console.log(`relative file path : ${filename}`);
-    return filename;
-}
 
 /**
  * shortcut of rigister a command
