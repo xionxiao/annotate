@@ -77,6 +77,7 @@ export class NotePanel {
             const nonce = NotePanel.getNonce();
             const cssUri = this.loadResource("resource/css", "style.css");
             const scriptUri = this.loadResource("resource/js", "main.js");
+            const drawdownJs = this.loadResource('resource/js', 'drawdown.js');
             const webview = this.panel.webview;
             const file = utils.getActiveFileRelativePath();
             let template = _.template(data);
@@ -85,6 +86,7 @@ export class NotePanel {
                 'cssUri': cssUri,
                 'webview': webview,
                 'scriptUri': scriptUri,
+                'drawdownJs': drawdownJs,
                 'filename': file
             });
         } catch (error) {
