@@ -22,13 +22,40 @@
 </head>
 
 <body>
-    <h1>
-        <%= filename %>
-    </h1>
-    <p><h2> note title </h2></p>
-    <textarea class="text-area"></textarea>
+    <!-- Source file name -->
+    <div class="title">
+        <h1>
+            <%= filename %>
+        </h1>
+    </div>
+
+    <% _.forEach([1,2,3], note=> { %>
+    <!-- Note Title-->
+    <div class="note-title">
+        <p>
+            <h2> note title </h2>
+        </p>
+    </div>
+
+    <!-- Markdown area -->
+    <div id="markdown" class="note-markdown">
+        Note String
+    </div>
+
+    <!-- Markdown edit -->
+    <div class="note-edit">
+        <textarea class="text-area"></textarea>
+        <button value="确定">确定</button>
+    </div>
+    <% }); %>
 
     <script nonce="<%= nonce %>" src="<%= scriptUri %>"></script>
+    <script nonce="<%= nonce %>" src="<%= drawdownJs %>"></script>
+    <script nonce="<%= nonce %>">
+        console.log('render markdown')
+        let elements = document.getElementsByClassName('note-markdown');
+        Array.from(elements).forEach(ele => ele.innerHTML = markdown("## Markdown String"))
+    </script>
 </body>
 
 </html>
