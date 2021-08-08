@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as utils from './utils';
+import { NotePos } from './note';
 import _ = require('lodash');
 
 /**
@@ -8,13 +9,17 @@ import _ = require('lodash');
 export class NotePanel {
     // Name of panel: annotate.NotePanel
     public static readonly viewType = "NotePanel";
-    // 
+    // Singleton instance
     public static instance: NotePanel | undefined;
 
     private readonly panel: vscode.WebviewPanel;
     private readonly context: vscode.ExtensionContext;
     public readonly time: Date;
 
+    /**
+     * Constructor
+     * @param context 
+     */
     private constructor(context: vscode.ExtensionContext) {
         let title = "Annotation";
         this.time = new Date();
@@ -34,6 +39,11 @@ export class NotePanel {
         );
     }
 
+    /**
+     * Get NotePanel instance (Singleton)
+     * @param context 
+     * @returns 
+     */
     public static getInstance(context: vscode.ExtensionContext) {
         if (NotePanel.instance) {
             return NotePanel.instance;
@@ -43,17 +53,24 @@ export class NotePanel {
         }
     }
 
+    // Load resource
     private loadResource(folder: string, filename: string) {
         const onDiskUri = vscode.Uri.joinPath(this.context.extensionUri, folder, filename);
         return this.panel.webview.asWebviewUri(onDiskUri);
     }
 
+    /**
+     * Update NotePanel
+     */
     public async update() {
         if (this.panel) {
             this.panel.webview.html = await this.getHtml();
         }
     }
 
+    /**
+     * Show NotePanel
+     */
     public show() {
         if (this.panel) {
             this.update();
@@ -61,7 +78,11 @@ export class NotePanel {
         }
     }
 
-    public static getNonce() {
+    /**
+     * Generate JS Nonce string for Content-Security-Policy
+     * @returns 
+     */
+    private static getNonce() {
         let text = '';
         const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         for (let i = 0; i < 32; i++) {
@@ -70,28 +91,43 @@ export class NotePanel {
         return text;
     }
 
+    /**
+     * Load index.html template and render to html content
+     * @returns 
+     */
     private async getHtml() {
         let uri = vscode.Uri.joinPath(this.context.extensionUri, 'resource/html', 'index.html');
         try {
             let data = await utils.readFile(uri.path);
             const nonce = NotePanel.getNonce();
-            const cssUri = this.loadResource("resource/css", "style.css");
-            const scriptUri = this.loadResource("resource/js", "main.js");
-            const drawdownJs = this.loadResource('resource/js', 'drawdown.js');
+            const resource = this.loadResource("resource", "");
             const webview = this.panel.webview;
             const file = utils.getActiveFileRelativePath();
             let template = _.template(data);
             return template({
                 'nonce': nonce,
-                'cssUri': cssUri,
                 'webview': webview,
-                'scriptUri': scriptUri,
-                'drawdownJs': drawdownJs,
-                'filename': file
+                'filename': file,
+                'resource': resource
             });
         } catch (error) {
             console.log(error);
             return JSON.stringify(error);
+        }
+    }
+
+    /**
+     * Show Notes
+     */
+    public showNotes(notes: NotePos) {
+        if (this.panel) {
+            this.panel.webview.postMessage({
+                command: 'AddNotes',
+                content: notes
+            });
+        } else {
+            // Error handling, show toast to user
+            console.error('NotePanel not initialed');
         }
     }
 }

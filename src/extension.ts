@@ -23,7 +23,8 @@ export function activate(context: vscode.ExtensionContext) {
     // open annotation webview
     createCommand(context, 'annotate.openAnnotation', async () => {
         console.log("execute annotate.openAnnotation");
-        NotePanel.getInstance(context).show();
+        let panel = NotePanel.getInstance(context);
+        panel.show();
         /*
         let filename = getActiveFileRelativePath();
         if (filename) {
@@ -66,6 +67,7 @@ export function activate(context: vscode.ExtensionContext) {
                 vscode.window.activeTextEditor?.setDecorations(
                     decorator,
                     ranges);
+                NotePanel.getInstance(context).showNotes(gConfig.notes[file]);
             }
         });
     });

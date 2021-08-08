@@ -1,28 +1,40 @@
 (function () {
+    // initial vscode api
+    console.log(_.VERSION);
+    console.log('Initial webview vscode api');
     const vscode = acquireVsCodeApi();
 
-    const oldState = vscode.getState();
+    // update Note
+    function updateNote(note) {
+        // Send message back to the extension
+        vscode.postMessage({
+            command: 'UpdateNote',
+            content: note
+        });
+    }
 
-    let currentCount = (oldState && oldState.count) || 0;
+    function addNote(message) {
+        console.log(message);
+    }
 
-    console.log('Initial state', oldState);
-
-    // Update state
-    vscode.setState({ count: currentCount });
-
-    // Send a message back to the extension
-    vscode.postMessage({
-        command: 'alert',
-        text: '🐛  on line ' + currentCount
-    });
-
-    // Handle messages sent from the extension to the webview
+    /**
+     * Handle messages sent from the extension to the webview
+     * Provide APIs:
+     * Update:
+     * Add:
+     * Remove:
+     */
     window.addEventListener('message', event => {
         const message = event.data; // The json data that the extension sent
         switch (message.command) {
-            case 'refactor':
-                currentCount = Math.ceil(currentCount * 0.5);
-                counter.textContent = currentCount;
+            case 'Update':
+                // Update Notes
+                console.log(`update ${message.content}`);
+                break;
+            case 'Add':
+                // Add a Note
+                // parentContainer.insertBefor(newItem, child)
+                console.log(`add notes`, message.content);
                 break;
         }
     });

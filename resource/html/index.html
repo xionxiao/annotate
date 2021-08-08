@@ -10,11 +10,11 @@
     -->
 
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'none'; style-src <%= webview.cspSource %>; img-src <%= webview.cspSource %> https:; script-src 'nonce-<%= nonce %>';">
+        content="default-src 'none'; style-src <%= webview.cspSource %>; img-src <%= webview.cspSource %> https:; script-src 'nonce-<%= nonce %>' 'self' 'unsafe-eval';">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link href="<%= cssUri %>" rel="stylesheet">
+    <link href="<%= resource %>/css/style.css" rel="stylesheet">
 
     <title>
         <%= filename %>
@@ -29,7 +29,7 @@
         </h1>
     </div>
 
-    <% _.forEach([1,2,3], note=> { %>
+    <script type="text/template" id="template">
     <!-- Note Title-->
     <div class="note-title">
         <p>
@@ -47,13 +47,34 @@
         <textarea class="text-area"></textarea>
         <button value="确定">确定</button>
     </div>
-    <% }); %>
+    </script>
 
-    <script nonce="<%= nonce %>" src="<%= scriptUri %>"></script>
-    <script nonce="<%= nonce %>" src="<%= drawdownJs %>"></script>
-    <script nonce="<%= nonce %>">
-        console.log('render markdown')
-        let elements = document.getElementsByClassName('note-markdown');
+    <div id="output">
+        None
+    </div>
+
+    <script nonce="<%= nonce %>" src="<%= resource %>/js/lodash.min.js"></script>
+    <script nonce="<%= nonce %>" src="<%= resource %>/js/drawdown.min.js"></script>
+    <script nonce="<%= nonce %>" src="<%= resource %>/js/main.js"></script>
+    <script nonce="<%= nonce %>" >
+        function $(sel) {
+            if (sel.startsWith("#")) {
+                return document.getElementById(sel.substring(1));
+            } else if(sel.startsWith(".")) {
+                return document.getElementsByClassName(sel.substring(1))
+            } else {
+                return null;
+            }
+        }
+        console.log('render markdown', _.VERSION)
+        let output = $('#output')
+        let t = $("#template").innerHTML
+        console.log('template')
+        // Use mustache interpolate
+        _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
+        let txt = _.template(t)()
+        output.innerHTML = txt
+        let elements = $('.note-markdown');
         Array.from(elements).forEach(ele => ele.innerHTML = markdown("## Markdown String"))
     </script>
 </body>
