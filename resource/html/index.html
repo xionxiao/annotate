@@ -33,13 +33,13 @@
     <!-- Note Title-->
     <div class="note-title">
         <p>
-            <h2> note title </h2>
+            <h2> {{ note.title }} </h2>
         </p>
     </div>
 
     <!-- Markdown area -->
     <div id="markdown" class="note-markdown">
-        Note String
+        {{ note.note }}
     </div>
 
     <!-- Markdown edit -->
@@ -53,8 +53,9 @@
         None
     </div>
 
-    <script nonce="<%= nonce %>" src="<%= resource %>/js/lodash.min.js"></script>
+    <!--<script nonce="<%= nonce %>" src="<%= resource %>/js/lodash.min.js"></script>-->
     <script nonce="<%= nonce %>" src="<%= resource %>/js/drawdown.min.js"></script>
+    <script nonce="<%= nonce %>" src="<%= resource %>/js/tmpl.js"></script>
     <script nonce="<%= nonce %>" src="<%= resource %>/js/main.js"></script>
     <script nonce="<%= nonce %>" >
         function $(sel) {
@@ -66,16 +67,16 @@
                 return null;
             }
         }
-        console.log('render markdown', _.VERSION)
+        console.log('render markdown')
         let output = $('#output')
         let t = $("#template").innerHTML
         console.log('template')
         // Use mustache interpolate
-        _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
-        let txt = _.template(t)()
-        output.innerHTML = txt
+        //_.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
+        //let txt = _.template(t)()
+        output.innerHTML = tmpl(t, {note: {title: 'Note Title', note: 'Note text'}})
         let elements = $('.note-markdown');
-        Array.from(elements).forEach(ele => ele.innerHTML = markdown("## Markdown String"))
+        Array.from(elements).forEach(ele => ele.innerHTML = markdown("## Note Markdown String"))
     </script>
 </body>
 
